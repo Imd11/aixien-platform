@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Render Frame</title>
+    <style>
+        /* Use border-box for all elements for intuitive sizing */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #render-container {
+            display: inline-block;
+            width: fit-content;
+            height: fit-content;
+        }
+    </style>
+</head>
+<body>
+    <div id="render-container"></div>
+    <script>
+        window.setHTML = function(html) {
+            document.getElementById('render-container').innerHTML = html;
+        };
+        
+        window.getElement = function() {
+            return document.getElementById('render-container');
+        };
+    </script>
+</body>
+</html>
