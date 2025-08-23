@@ -1,5 +1,5 @@
 import mammoth from 'mammoth';
-import { FileUploadResult } from '@/types';
+import { FileUploadResult } from '@/lib/shared/types';
 
 export class FileProcessor {
   static async processFile(file: File): Promise<FileUploadResult> {
@@ -23,8 +23,7 @@ export class FileProcessor {
       const content = await file.text();
       return {
         content,
-        filename: file.name,
-        type: 'text'
+        filename: file.name
       };
     } catch {
       throw new Error('读取文本文件失败');
@@ -37,8 +36,7 @@ export class FileProcessor {
       const result = await mammoth.extractRawText({ arrayBuffer });
       return {
         content: result.value,
-        filename: file.name,
-        type: 'docx'
+        filename: file.name
       };
     } catch {
       throw new Error('读取Word文档失败');
@@ -55,8 +53,7 @@ export class FileProcessor {
       
       return {
         content,
-        filename: file.name,
-        type: 'pdf'
+        filename: file.name
       };
     } catch {
       throw new Error('读取PDF文件失败');

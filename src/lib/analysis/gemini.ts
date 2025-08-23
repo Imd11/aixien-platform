@@ -89,9 +89,8 @@ export class GeminiAnalysisEngine {
 
   private parseAnalysisResult(rawResult: string, input: string): AnalysisResult {
     return {
-      input,
+      success: true,
       result: rawResult, // 直接返回完整的格式化文本
-      timestamp: Date.now()
     };
   }
 

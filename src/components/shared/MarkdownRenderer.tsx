@@ -28,7 +28,7 @@ export default function MarkdownRenderer({ content, className = '', style }: Mar
   const renderMarkdown = (text: string) => {
     // 分行处理
     const lines = text.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
     let listItems: string[] = [];
     let listType: 'ul' | 'ol' | null = null;
 
