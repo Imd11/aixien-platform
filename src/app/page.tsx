@@ -78,6 +78,7 @@ export default function Home() {
                 <div className="dropdown-content">
                   <button onClick={() => handleFeatureClick('/hypermind')} className="dropdown-item">姜博士升维口令</button>
                   <button onClick={() => handleFeatureClick('/diagnose')} className="dropdown-item">姜博士三加一诊断口令</button>
+                  <button onClick={() => handleFeatureClick('/customer-value')} className="dropdown-item">姜博士客户价值六件套</button>
                 </div>
               </div>
               <div className="dropdown">

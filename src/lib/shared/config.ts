@@ -23,6 +23,13 @@ export const API_CONFIG = {
       topP: 0.9,
       maxOutputTokens: 6144,
     },
+    // 客户价值六件套口令配置 - 详细的客户分析
+    CUSTOMER_VALUE: {
+      temperature: 0.7,
+      topK: 35,
+      topP: 0.9,
+      maxOutputTokens: 8192,
+    },
     // 通用配置 - 平衡的参数
     DEFAULT: {
       temperature: 0.7,
