@@ -12,13 +12,6 @@ export default function Page() {
           <p className="text-gray-600">选择您的登录方式</p>
         </div>
 
-        {/* 添加调试信息 */}
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
-          <p>Clerk 环境检查：</p>
-          <p>Publishable Key: {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'Found' : 'Missing'}</p>
-          <p>Key Type: {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.startsWith('pk_live_') ? 'Production' : 'Development'}</p>
-        </div>
-
         <SignIn 
           afterSignInUrl="/"
           redirectUrl="/"
