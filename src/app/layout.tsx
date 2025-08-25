@@ -22,8 +22,8 @@ export default function RootLayout({
       signUpUrl="/sign-up"
       afterSignInUrl="/"
       afterSignUpUrl="/"
-      signInFallbackRedirectUrl="/accept-invitation"
-      signUpFallbackRedirectUrl="/accept-invitation"
+      signInFallbackRedirectUrl="/sign-in"
+      signUpFallbackRedirectUrl="/sign-in"
     >
       <html lang="zh-CN">
         <head>
