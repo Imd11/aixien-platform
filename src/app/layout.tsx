@@ -24,6 +24,8 @@ export default function RootLayout({
       afterSignUpUrl="/"
       signInFallbackRedirectUrl="/sign-in"
       signUpFallbackRedirectUrl="/sign-in"
+      domain="aixien.com"
+      isSatellite={false}
     >
       <html lang="zh-CN">
         <head>
