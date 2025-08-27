@@ -79,6 +79,7 @@ export default function Home() {
                   <button onClick={() => handleFeatureClick('/hypermind')} className="dropdown-item">姜博士升维口令</button>
                   <button onClick={() => handleFeatureClick('/diagnose')} className="dropdown-item">姜博士三加一诊断口令</button>
                   <button onClick={() => handleFeatureClick('/customer-value')} className="dropdown-item">姜博士客户价值六件套</button>
+                  <button onClick={() => handleFeatureClick('/viral-writing')} className="dropdown-item">姜博士爆款文章口令（Fery定制版）</button>
                 </div>
               </div>
               <div className="dropdown">
