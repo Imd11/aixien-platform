@@ -41,12 +41,7 @@ export default function CustomerValue() {
       return;
     }
 
-    setAnalysisState(prev => ({ 
-      ...prev, 
-      isLoading: true, 
-      error: null,
-      result: null  // 保持为 null，避免过早显示结果页面
-    }));
+    setAnalysisState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       const response = await fetch('/api/customer-value', {
@@ -65,6 +60,7 @@ export default function CustomerValue() {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = '';
+      let firstChunk = true;
 
       if (reader) {
         while (true) {
@@ -81,31 +77,35 @@ export default function CustomerValue() {
                 setAnalysisState(prev => ({
                   ...prev,
                   isLoading: false,
-                  result: prev.result || { result: accumulatedContent, timestamp: Date.now() }
                 }));
                 break;
               }
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.content) {
-                  accumulatedContent += parsed.content;
-                  // 当收到第一个内容块时，创建结果对象
-                  if (!accumulatedContent.replace(parsed.content, '')) {
+                  // 还原转义字符
+                  const content = parsed.content
+                    .replace(/\\n/g, '\n')
+                    .replace(/\\r/g, '\r')
+                    .replace(/\\t/g, '\t')
+                    .replace(/\\"/g, '"')
+                    .replace(/\\\\/g, '\\');
+                  
+                  accumulatedContent += content;
+                  
+                  // 第一次收到内容时切换到结果页面
+                  if (firstChunk) {
+                    firstChunk = false;
                     setAnalysisState(prev => ({
                       ...prev,
-                      result: { 
-                        result: accumulatedContent, 
-                        timestamp: Date.now() 
-                      }
+                      isLoading: false,
+                      result: { result: accumulatedContent, timestamp: Date.now() }
                     }));
                   } else {
-                    // 后续更新只更新内容
+                    // 后续更新内容
                     setAnalysisState(prev => ({
                       ...prev,
-                      result: prev.result ? {
-                        ...prev.result,
-                        result: accumulatedContent
-                      } : null
+                      result: prev.result ? { ...prev.result, result: accumulatedContent } : null
                     }));
                   }
                 }
@@ -121,7 +121,6 @@ export default function CustomerValue() {
         ...prev,
         isLoading: false,
         error: error instanceof Error ? error.message : '分析失败，请稍后重试',
-        result: null
       }));
     }
   };

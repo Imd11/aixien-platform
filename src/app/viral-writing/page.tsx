@@ -88,24 +88,28 @@ export default function Home() {
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.content) {
-                  accumulatedContent += parsed.content;
-                  // 当收到第一个内容块时，创建结果对象
-                  if (!accumulatedContent.replace(parsed.content, '')) {
+                  // 还原转义字符
+                  const content = parsed.content
+                    .replace(/\\n/g, '\n')
+                    .replace(/\\r/g, '\r')
+                    .replace(/\\t/g, '\t')
+                    .replace(/\\"/g, '"')
+                    .replace(/\\\\/g, '\\');
+                  
+                  accumulatedContent += content;
+                  
+                  // 第一次收到内容时切换到结果页面
+                  if (!analysisState.result) {
                     setAnalysisState(prev => ({
                       ...prev,
-                      result: { 
-                        result: accumulatedContent, 
-                        timestamp: Date.now() 
-                      }
+                      isLoading: false,
+                      result: { result: accumulatedContent, timestamp: Date.now() }
                     }));
                   } else {
-                    // 后续更新只更新内容
+                    // 后续更新内容
                     setAnalysisState(prev => ({
                       ...prev,
-                      result: prev.result ? {
-                        ...prev.result,
-                        result: accumulatedContent
-                      } : null
+                      result: prev.result ? { ...prev.result, result: accumulatedContent } : null
                     }));
                   }
                 }
