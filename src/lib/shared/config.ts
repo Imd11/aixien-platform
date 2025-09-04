@@ -14,28 +14,35 @@ export const API_CONFIG = {
       temperature: 0.6,
       topK: 30,
       topP: 0.9,
-      maxOutputTokens: 8192,
+      maxOutputTokens: 16384,  // 增加到16K
     },
     // 诊断口令配置 - 更准确和结构化
     DIAGNOSE: {
       temperature: 0.6,
       topK: 30,
       topP: 0.9,
-      maxOutputTokens: 6144,
+      maxOutputTokens: 16384,  // 增加到16K
     },
     // 客户价值六件套口令配置 - 详细的客户分析
     CUSTOMER_VALUE: {
       temperature: 0.7,
       topK: 35,
       topP: 0.9,
-      maxOutputTokens: 8192,
+      maxOutputTokens: 16384,
+    },
+    // 爆款文章口令配置 - 需要更大的输出空间
+    VIRAL_WRITING: {
+      temperature: 0.8,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 32768,  // 增加到32K以支持长文章
     },
     // 通用配置 - 平衡的参数
     DEFAULT: {
       temperature: 0.7,
       topK: 35,
       topP: 0.95,
-      maxOutputTokens: 4096,
+      maxOutputTokens: 8192,
     }
   }
 };
