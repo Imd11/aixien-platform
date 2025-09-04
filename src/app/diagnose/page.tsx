@@ -41,21 +41,74 @@ export default function Home() {
       return;
     }
 
-    setAnalysisState(prev => ({ ...prev, isLoading: true, error: null }));
+    setAnalysisState(prev => ({ 
+      ...prev, 
+      isLoading: true, 
+      error: null,
+      result: { result: '', timestamp: Date.now() }
+    }));
 
     try {
-      const result = await diagnoseEngine.analyze(uiState.inputText.trim());
-      setAnalysisState(prev => ({
-        ...prev,
-        isLoading: false,
-        result,
-        error: null,
-      }));
+      const response = await fetch('/api/diagnose', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: uiState.inputText.trim() }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '分析失败');
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedContent = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') {
+                setAnalysisState(prev => ({
+                  ...prev,
+                  isLoading: false,
+                }));
+                break;
+              }
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.content) {
+                  accumulatedContent += parsed.content;
+                  setAnalysisState(prev => ({
+                    ...prev,
+                    result: { 
+                      result: accumulatedContent, 
+                      timestamp: prev.result?.timestamp || Date.now() 
+                    }
+                  }));
+                }
+              } catch (e) {
+                console.error('解析流数据失败:', e);
+              }
+            }
+          }
+        }
+      }
     } catch (error) {
       setAnalysisState(prev => ({
         ...prev,
         isLoading: false,
         error: error instanceof Error ? error.message : '分析失败，请稍后重试',
+        result: null
       }));
     }
   };
