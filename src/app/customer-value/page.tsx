@@ -45,7 +45,7 @@ export default function CustomerValue() {
       ...prev, 
       isLoading: true, 
       error: null,
-      result: { result: '', timestamp: Date.now() }
+      result: null  // 保持为 null，避免过早显示结果页面
     }));
 
     try {
@@ -81,6 +81,7 @@ export default function CustomerValue() {
                 setAnalysisState(prev => ({
                   ...prev,
                   isLoading: false,
+                  result: prev.result || { result: accumulatedContent, timestamp: Date.now() }
                 }));
                 break;
               }
@@ -88,13 +89,25 @@ export default function CustomerValue() {
                 const parsed = JSON.parse(data);
                 if (parsed.content) {
                   accumulatedContent += parsed.content;
-                  setAnalysisState(prev => ({
-                    ...prev,
-                    result: { 
-                      result: accumulatedContent, 
-                      timestamp: prev.result?.timestamp || Date.now() 
-                    }
-                  }));
+                  // 当收到第一个内容块时，创建结果对象
+                  if (!accumulatedContent.replace(parsed.content, '')) {
+                    setAnalysisState(prev => ({
+                      ...prev,
+                      result: { 
+                        result: accumulatedContent, 
+                        timestamp: Date.now() 
+                      }
+                    }));
+                  } else {
+                    // 后续更新只更新内容
+                    setAnalysisState(prev => ({
+                      ...prev,
+                      result: prev.result ? {
+                        ...prev.result,
+                        result: accumulatedContent
+                      } : null
+                    }));
+                  }
                 }
               } catch (e) {
                 console.error('解析流数据失败:', e);
