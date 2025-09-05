@@ -7,6 +7,7 @@ export class TelianKnowledgeFetcher {
   async fetchAllMarkdownFiles(): Promise<string> {
     // 检查缓存
     if (this.cache && Date.now() - this.lastFetch < this.CACHE_DURATION) {
+      console.log('使用缓存的GitHub知识库内容');
       return this.cache;
     }
     
@@ -17,8 +18,8 @@ export class TelianKnowledgeFetcher {
         {
           headers: {
             'Accept': 'application/vnd.github.v3+json',
-            // 如果有GitHub token，可以在这里添加
-            // 'Authorization': `token ${process.env.GITHUB_TOKEN}`
+            // 使用GitHub token进行认证
+            'Authorization': `token ${process.env.GITHUB_TOKEN}`
           }
         }
       );

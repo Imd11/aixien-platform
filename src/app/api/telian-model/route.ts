@@ -18,10 +18,10 @@ export async function POST(req: NextRequest) {
     let knowledge = '';
     try {
       console.log('开始获取特连光电知识库...');
-      // 使用Promise.race设置10秒超时
+      // 使用Promise.race设置30秒超时（26个文件需要更多时间）
       const fetchPromise = telianKnowledgeFetcher.fetchAllMarkdownFiles();
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('GitHub知识库获取超时')), 10000)
+        setTimeout(() => reject(new Error('GitHub知识库获取超时')), 30000)
       );
       
       knowledge = await Promise.race([fetchPromise, timeoutPromise]) as string;
