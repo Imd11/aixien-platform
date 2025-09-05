@@ -14,8 +14,22 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 直接使用核心知识库内容，避免超时
-    const knowledge = `# 特连光电知识库
+    // 获取GitHub知识库内容，设置超时限制
+    let knowledge = '';
+    try {
+      console.log('开始获取特连光电知识库...');
+      // 使用Promise.race设置10秒超时
+      const fetchPromise = getGithubKnowledgeBase();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('GitHub知识库获取超时')), 10000)
+      );
+      
+      knowledge = await Promise.race([fetchPromise, timeoutPromise]) as string;
+      console.log('知识库获取成功');
+    } catch (error) {
+      console.error('获取知识库失败，使用备用内容:', error);
+      // 使用备用内容
+      knowledge = `# 特连光电知识库（备用版本）
 
 ## 核心管理理念
 
@@ -47,7 +61,10 @@ export async function POST(req: NextRequest) {
 - 拥抱冲突，解决问题
 - 承认差异，寻找共识
 - 价值判断，追求真理
-- 协同共赢，创造价值`;
+- 协同共赢，创造价值
+
+注：GitHub知识库暂时无法访问，使用核心理论进行分析。`;
+    }
 
     // 组合完整的提示词
     const fullPrompt = `
