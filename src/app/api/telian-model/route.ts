@@ -111,15 +111,8 @@ export async function POST(req: NextRequest) {
                 }
                 
                 if (content) {
-                  // 转义内容中的特殊字符，确保JSON有效
-                  const safeContent = content.replace(/\\/g, '\\\\')
-                                            .replace(/"/g, '\\"')
-                                            .replace(/\n/g, '\\n')
-                                            .replace(/\r/g, '\\r')
-                                            .replace(/\t/g, '\\t');
-                  
-                  // 发送转义后的内容
-                  const data = JSON.stringify({ content: safeContent });
+                  // 直接使用JSON.stringify来处理转义，更安全
+                  const data = JSON.stringify({ content });
                   controller.enqueue(encoder.encode(`data: ${data}\n\n`));
                 }
               }

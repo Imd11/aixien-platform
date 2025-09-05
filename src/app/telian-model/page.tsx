@@ -83,15 +83,8 @@ export default function Home() {
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.content) {
-                  // 还原转义字符
-                  const content = parsed.content
-                    .replace(/\\n/g, '\n')
-                    .replace(/\\r/g, '\r')
-                    .replace(/\\t/g, '\t')
-                    .replace(/\\"/g, '"')
-                    .replace(/\\\\/g, '\\');
-                  
-                  accumulatedContent += content;
+                  // content已经是正确的字符串，无需手动处理转义
+                  accumulatedContent += parsed.content;
                   
                   // 第一次收到内容时切换到结果页面
                   if (firstChunk) {

@@ -68,15 +68,8 @@ export default function TelianBossAnalysisPage() {
                   throw new Error(parsed.error);
                 }
                 if (parsed.content) {
-                  // 还原转义字符（与员工版一致）
-                  const content = parsed.content
-                    .replace(/\\n/g, '\n')
-                    .replace(/\\r/g, '\r')
-                    .replace(/\\t/g, '\t')
-                    .replace(/\\"/g, '"')
-                    .replace(/\\\\/g, '\\');
-                  
-                  accumulatedContent += content;
+                  // content已经是正确的字符串，无需手动处理转义
+                  accumulatedContent += parsed.content;
                   setStreamingContent(accumulatedContent);
                 }
                 if (parsed.done) {

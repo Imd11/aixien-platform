@@ -119,14 +119,8 @@ ${content}
                 }
                 
                 if (content) {
-                  // 统一使用content格式（与员工版一致）
-                  const safeContent = content.replace(/\\/g, '\\\\')
-                                            .replace(/"/g, '\\"')
-                                            .replace(/\n/g, '\\n')
-                                            .replace(/\r/g, '\\r')
-                                            .replace(/\t/g, '\\t');
-                  
-                  const data = JSON.stringify({ content: safeContent });
+                  // 直接使用JSON.stringify来处理转义，更安全
+                  const data = JSON.stringify({ content });
                   controller.enqueue(encoder.encode(`data: ${data}\n\n`));
                 }
               }
