@@ -4,7 +4,7 @@ import { API_CONFIG } from './config';
 export async function createStreamingResponse(
   prompt: string,
   content: string,
-  configType: 'DEFAULT' | 'HYPERMIND' | 'DIAGNOSE' | 'CUSTOMER_VALUE' | 'VIRAL_WRITING' = 'DEFAULT'
+  configType: 'DEFAULT' | 'HYPERMIND' | 'DIAGNOSE' | 'CUSTOMER_VALUE' | 'VIRAL_WRITING' | 'TELIAN_MODEL' = 'DEFAULT'
 ) {
   const config = API_CONFIG.GENERATION_CONFIG[configType] || API_CONFIG.GENERATION_CONFIG.DEFAULT;
   

@@ -37,6 +37,13 @@ export const API_CONFIG = {
       topP: 0.95,
       maxOutputTokens: 32768,  // 增加到32K以支持长文章
     },
+    // 特连光电模式配置 - 需要大容量支持详细报告
+    TELIAN_MODEL: {
+      temperature: 0.7,
+      topK: 35,
+      topP: 0.9,
+      maxOutputTokens: 32768,  // 32K以支持详细分析报告
+    },
     // 通用配置 - 平衡的参数
     DEFAULT: {
       temperature: 0.7,

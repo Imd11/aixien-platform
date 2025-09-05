@@ -5,6 +5,10 @@ const isProtectedRoute = createRouteMatcher([
   '/hypermind(.*)',
   '/diagnose(.*)',
   '/strategy(.*)',
+  '/customer-value(.*)',
+  '/viral-writing(.*)',
+  '/telian-model(.*)',
+  '/telian-boss(.*)',
   '/tools/voice-to-text(.*)',
   '/api(.*)'
 ]);
