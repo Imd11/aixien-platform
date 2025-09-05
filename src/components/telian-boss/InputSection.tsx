@@ -125,7 +125,7 @@ export default function InputSection({
           <textarea
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="请输入需要分析的企业经营问题，包括【企业】、【姓名】、【职位】信息以及具体问题描述..."
+            placeholder="请输入需要分析的企业经营问题，包括【企业】、【企业家尊称】信息以及具体问题描述..."
             className="w-full h-40 p-6 text-lg border-2 transition-all duration-200 resize-none magazine-body"
             style={{
               borderRadius: 'var(--radius-md)',
