@@ -14,17 +14,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 获取GitHub知识库内容
-    let knowledge = '';
-    try {
-      console.log('开始获取特连光电知识库...');
-      // 直接获取，不设置超时限制
-      knowledge = await telianKnowledgeFetcher.fetchAllMarkdownFiles();
-      console.log('知识库获取成功，长度:', knowledge.length);
-    } catch (error) {
-      console.error('获取知识库失败，使用备用内容:', error);
-      // 使用备用内容
-      knowledge = `# 特连光电知识库（备用版本）
+    // 直接使用核心知识库内容，避免超时
+    const knowledge = `# 特连光电知识库
 
 ## 核心管理理念
 
@@ -45,21 +36,21 @@ export async function POST(req: NextRequest) {
 3. 找到真利益（价值标准）- 价值判断
 4. 向往大海（共同利益）- 协同共赢
 
-注：GitHub知识库暂时无法访问，使用核心理论进行分析。`;
-    }
+### 特连管理方法论
+- 客户价值导向思维
+- 问题即利润的转化机制
+- 百分百责任制实施
+- 日清日结管理模式
+- 持续改进循环体系
+
+### 组织文化
+- 拥抱冲突，解决问题
+- 承认差异，寻找共识
+- 价值判断，追求真理
+- 协同共赢，创造价值`;
 
     // 组合完整的提示词
-    let fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', knowledge) + content;
-    
-    // 检查提示词总长度，防止超出服务器处理能力
-    console.log('提示词总长度:', fullPrompt.length);
-    if (fullPrompt.length > 400000) { // 约100K tokens
-      console.warn('提示词过长，截断知识库内容');
-      // 如果太长，使用简化的知识库
-      const simplifiedKnowledge = knowledge.slice(0, 50000); // 只保留50KB
-      fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', simplifiedKnowledge) + content;
-      console.log('使用简化提示词，长度:', fullPrompt.length);
-    }
+    const fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', knowledge) + content;
 
     // 创建流式响应 - 使用与其他页面相同的配置
     const response = await createStreamingResponse(fullPrompt, '', 'TELIAN_MODEL');
