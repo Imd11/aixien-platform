@@ -63,8 +63,8 @@ export class TelianKnowledgeFetcher {
       let fullContent = `# 特连光电知识库\n\n更新时间: ${new Date().toLocaleString('zh-CN')}\n` 
                         + contents.join('\n---');
       
-      // 5. 智能截断（Gemini API限制）- 员工版提示词较长，需要更保守
-      const MAX_CHARS = 100000; // 约25K tokens，为长提示词留更多空间
+      // 5. 智能截断（Gemini API限制）
+      const MAX_CHARS = 300000; // 约75K tokens，留余地给用户输入和输出
       if (fullContent.length > MAX_CHARS) {
         // 截断但保留完整段落
         const truncated = fullContent.slice(0, MAX_CHARS);

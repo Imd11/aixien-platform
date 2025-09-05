@@ -14,22 +14,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 获取GitHub知识库内容 - 简化版，避免超时
+    // 获取GitHub知识库内容
     let knowledge = '';
     try {
-      console.log('开始获取特连光电知识库（简化版）...');
-      // 设置超时，避免长时间等待
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5000); // 5秒超时
-      
-      knowledge = await Promise.race([
-        telianKnowledgeFetcher.fetchAllMarkdownFiles(),
-        new Promise<string>((_, reject) => 
-          setTimeout(() => reject(new Error('获取超时')), 5000)
-        )
-      ]);
-      
-      clearTimeout(timeout);
+      console.log('开始获取特连光电知识库...');
+      // 直接获取，不设置超时限制
+      knowledge = await telianKnowledgeFetcher.fetchAllMarkdownFiles();
       console.log('知识库获取成功，长度:', knowledge.length);
     } catch (error) {
       console.error('获取知识库失败，使用备用内容:', error);

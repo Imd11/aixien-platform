@@ -100,8 +100,14 @@ ${content}
                 }
                 
                 if (content) {
-                  // 转换为前端期望的格式
-                  const data = JSON.stringify({ text: content });
+                  // 统一使用content格式（与员工版一致）
+                  const safeContent = content.replace(/\\/g, '\\\\')
+                                            .replace(/"/g, '\\"')
+                                            .replace(/\n/g, '\\n')
+                                            .replace(/\r/g, '\\r')
+                                            .replace(/\t/g, '\\t');
+                  
+                  const data = JSON.stringify({ content: safeContent });
                   controller.enqueue(encoder.encode(`data: ${data}\n\n`));
                 }
               }
