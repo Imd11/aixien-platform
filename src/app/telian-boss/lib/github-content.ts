@@ -130,3 +130,8 @@ export class TelianKnowledgeFetcher {
 
 // 创建单例实例
 export const telianKnowledgeFetcher = new TelianKnowledgeFetcher();
+
+// 导出便捷函数（与telian-model保持一致）
+export async function getGithubKnowledgeBase(): Promise<string> {
+  return telianKnowledgeFetcher.fetchAllMarkdownFiles();
+}
