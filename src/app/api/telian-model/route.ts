@@ -14,13 +14,23 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 获取GitHub知识库内容
+    // 获取GitHub知识库内容 - 简化版，避免超时
     let knowledge = '';
     try {
-      console.log('开始获取特连光电知识库...');
-      // 在服务端环境中直接获取，避免客户端CORS问题
-      knowledge = await telianKnowledgeFetcher.fetchAllMarkdownFiles();
-      console.log('知识库获取成功');
+      console.log('开始获取特连光电知识库（简化版）...');
+      // 设置超时，避免长时间等待
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000); // 5秒超时
+      
+      knowledge = await Promise.race([
+        telianKnowledgeFetcher.fetchAllMarkdownFiles(),
+        new Promise<string>((_, reject) => 
+          setTimeout(() => reject(new Error('获取超时')), 5000)
+        )
+      ]);
+      
+      clearTimeout(timeout);
+      console.log('知识库获取成功，长度:', knowledge.length);
     } catch (error) {
       console.error('获取知识库失败，使用备用内容:', error);
       // 使用备用内容
@@ -51,7 +61,7 @@ export async function POST(req: NextRequest) {
     // 组合完整的提示词
     const fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', knowledge) + content;
 
-    // 创建流式响应
+    // 创建流式响应 - 使用与其他页面相同的配置
     const response = await createStreamingResponse(fullPrompt, '', 'TELIAN_MODEL');
     
     // 创建一个TransformStream来处理SSE格式
@@ -99,43 +109,36 @@ export async function POST(req: NextRequest) {
                                             .replace(/\n/g, '\\n')
                                             .replace(/\r/g, '\\r')
                                             .replace(/\t/g, '\\t');
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: safeContent })}\n\n`));
+                  
+                  // 发送转义后的内容
+                  const data = JSON.stringify({ content: safeContent });
+                  controller.enqueue(encoder.encode(`data: ${data}\n\n`));
                 }
               }
             } catch (e) {
-              console.error('解析流式数据失败:', e, 'line:', line);
+              console.error('解析流数据失败:', e);
             }
           }
         }
       },
+      
       flush(controller) {
-        // 处理缓冲区中剩余的数据
-        if (buffer.trim() && buffer.startsWith('data: ')) {
-          try {
-            const jsonStr = buffer.slice(6);
-            if (jsonStr !== '[DONE]') {
-              const parsed = JSON.parse(jsonStr);
-              if (parsed.choices?.[0]?.delta?.content) {
-                const content = parsed.choices[0].delta.content;
-                const safeContent = content.replace(/\\/g, '\\\\')
-                                          .replace(/"/g, '\\"')
-                                          .replace(/\n/g, '\\n')
-                                          .replace(/\r/g, '\\r')
-                                          .replace(/\t/g, '\\t');
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: safeContent })}\n\n`));
-              }
-            }
-          } catch (e) {
-            console.error('处理缓冲数据失败:', e);
-          }
+        // 处理任何剩余的缓冲数据
+        if (buffer.trim()) {
+          console.log('处理剩余缓冲数据:', buffer);
         }
-        // 发送结束标记
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       }
     });
-
-    // 返回流式响应
-    return new Response(response.body?.pipeThrough(transformStream), {
+    
+    // 通过transform流传输响应
+    if (!response.body) {
+      throw new Error('响应体为空');
+    }
+    
+    const transformedStream = response.body.pipeThrough(transformStream);
+    
+    return new Response(transformedStream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
@@ -143,12 +146,24 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Telian Model API error:', error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : '分析失败，请稍后重试' 
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
+    console.error('API路由错误:', error);
+    const errorMessage = error instanceof Error ? error.message : '处理请求时出错';
+    
+    // 返回SSE格式的错误
+    const encoder = new TextEncoder();
+    const errorStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(`data: {"error":"${errorMessage}"}\n\n`));
+        controller.close();
+      }
+    });
+    
+    return new Response(errorStream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   }
 }
