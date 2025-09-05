@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { FileUploadResult, AnalysisResult } from '@/lib/shared/types';
 import InputSection from '@/components/telian-boss/InputSection';
 import ResultsSection from '@/components/telian-boss/ResultsSection';
 import { AnimatePresence } from 'framer-motion';
-import { setCSSVariables } from '@/lib/utils/theme';
 
 export default function TelianBossAnalysisPage() {
   const [inputContent, setInputContent] = useState('');
@@ -13,10 +12,6 @@ export default function TelianBossAnalysisPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
   const abortControllerRef = useRef<AbortController | null>(null);
-
-  useEffect(() => {
-    setCSSVariables();
-  }, []);
 
   const handleFileUpload = useCallback((result: FileUploadResult) => {
     setInputContent((prev) => {
