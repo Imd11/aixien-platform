@@ -49,7 +49,17 @@ export async function POST(req: NextRequest) {
     }
 
     // 组合完整的提示词
-    const fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', knowledge) + content;
+    let fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', knowledge) + content;
+    
+    // 检查提示词总长度，防止超出服务器处理能力
+    console.log('提示词总长度:', fullPrompt.length);
+    if (fullPrompt.length > 400000) { // 约100K tokens
+      console.warn('提示词过长，截断知识库内容');
+      // 如果太长，使用简化的知识库
+      const simplifiedKnowledge = knowledge.slice(0, 50000); // 只保留50KB
+      fullPrompt = TELIAN_MODEL_PROMPT.replace('{knowledge}', simplifiedKnowledge) + content;
+      console.log('使用简化提示词，长度:', fullPrompt.length);
+    }
 
     // 创建流式响应 - 使用与其他页面相同的配置
     const response = await createStreamingResponse(fullPrompt, '', 'TELIAN_MODEL');
